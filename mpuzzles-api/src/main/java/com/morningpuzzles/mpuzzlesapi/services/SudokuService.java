@@ -5,7 +5,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
 
-import java.io.BufferedReader;
+import java.io.Reader;
+import java.io.FileWriter;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -22,11 +27,39 @@ public class SudokuService {
     
     private SudokuMatch currentMatch;
 
+    private void saveCurrentMatch() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        try (FileWriter writer = new FileWriter("last_sudoku.json")) {
+            gson.toJson(this.currentMatch, writer);
+            System.out.println("-> Current match saved");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean loadCurrentMatch() {
+        try (Reader reader = new FileReader("last_sudoku.json")) {
+
+            Gson gson = new Gson();
+            SudokuMatch lastMatch = gson.fromJson(reader, SudokuMatch.class);
+
+            if (lastMatch == null) return false;
+
+            System.out.println("-> Last Sudoku Loaded");
+            this.currentMatch = lastMatch;
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     private String getRandomSudokuData() {
         String line;
         List<String> lines = new ArrayList<>();
 
-        File file = new File("MorningPuzzlesAPI\\mpuzzles-api\\src\\main\\resources\\sudoku_set.txt");
+        File file = new File("sudoku_set.txt");
         try (Scanner sc = new Scanner(file)) {
             while(sc.hasNextLine()) {
                 line = sc.nextLine();
@@ -81,6 +114,7 @@ public class SudokuService {
         newSudokuMatch.setSolution(solution);
         newSudokuMatch.setDate(LocalDate.now());
         this.currentMatch = newSudokuMatch;
+        saveCurrentMatch();
     }
     
 
@@ -105,7 +139,7 @@ public class SudokuService {
     }
 
     public SudokuMatchDTO getSudokuMatch() {
-        if (currentMatch == null) generateNewMatch();
+        if (currentMatch == null && !loadCurrentMatch()) generateNewMatch();
 
         LocalDate now = LocalDate.now();
         LocalDate lastDate = currentMatch.getDate();
