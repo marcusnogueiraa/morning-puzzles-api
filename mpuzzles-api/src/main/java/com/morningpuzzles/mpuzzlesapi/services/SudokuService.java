@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 
 import com.morningpuzzles.mpuzzlesapi.dto.SudokuMatchDTO;
+import com.morningpuzzles.mpuzzlesapi.dto.SudokuResponseDTO;
 import com.morningpuzzles.mpuzzlesapi.entities.SudokuMatch;
 
 @Service
@@ -118,7 +119,7 @@ public class SudokuService {
     }
     
 
-    public boolean submiteSolution(SudokuMatchDTO sudokuSubmissionDTO) {
+    public SudokuResponseDTO submiteSolution(SudokuMatchDTO sudokuSubmissionDTO) {
         final short MAX = 9;
 
         short solutionGrid[][] = currentMatch.getSolution();
@@ -130,12 +131,12 @@ public class SudokuService {
                     System.out.println("i = " + i + " j = " + j);
                     System.out.println("solution = " + solutionGrid[i][j]);
                     System.out.println("submited = " + submitedGrid[i][j]);
-                    return false;
+                    return new SudokuResponseDTO(false);
                 }
             }
         }
 
-        return true;
+        return new SudokuResponseDTO(true);
     }
 
     public SudokuMatchDTO getSudokuMatch() {

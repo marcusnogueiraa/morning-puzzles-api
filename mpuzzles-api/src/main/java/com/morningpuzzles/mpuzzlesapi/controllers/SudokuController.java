@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.morningpuzzles.mpuzzlesapi.dto.SudokuMatchDTO;
+import com.morningpuzzles.mpuzzlesapi.dto.SudokuResponseDTO;
 import com.morningpuzzles.mpuzzlesapi.services.SudokuService;
 
 @RestController
@@ -22,7 +23,7 @@ public class SudokuController {
     }
 
     @PostMapping("submit")
-    boolean submiteSolution(@RequestBody SudokuMatchDTO sudokuSubmissionDTO) {
+    SudokuResponseDTO submiteSolution(@RequestBody SudokuMatchDTO sudokuSubmissionDTO) {
         return sudokuService.submiteSolution(sudokuSubmissionDTO);
     }
 
